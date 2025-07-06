@@ -1,4 +1,3 @@
-
 #include "pch.hpp"
 #include "ChatServer.hpp"
 #include "Logger.hpp"
@@ -16,6 +15,7 @@ engine::ChatServer::~ChatServer()
 void engine::ChatServer::Start()
 {
 	if (m_running) return;
+	m_running = true;
 
 	consoleInput.Start();
 	m_thread = std::thread([this]() { NetworkLoop(); });
@@ -28,7 +28,12 @@ void engine::ChatServer::Stop()
 
 void engine::ChatServer::NetworkLoop()
 {
-	m_running = false;
+	SteamDatagramErrMsg errMsg;
+	if (!GameNetworkingSockets_Init(nullptr, errMsg))
+	{
+		io::werror() << "GameNetworkingSockets_Init failed: " << errMsg;
+		return;
+	}
 
 	m_pInterface = SteamNetworkingSockets();
 
@@ -39,23 +44,23 @@ void engine::ChatServer::NetworkLoop()
 	SteamNetworkingConfigValue_t options{};
 	auto lambda = [this](SteamNetConnectionStatusChangedCallback_t* pInfo) { this->OnSteamNetConnectionStatusChanged(pInfo); };
 	std::function<void(SteamNetConnectionStatusChangedCallback_t*)> fn(lambda);
-	options.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, &fn ); // TODO make static
+	options.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, &lambda ); // TODO make static
 
 	m_hListenSocket = m_pInterface->CreateListenSocketIP( serverLocalAddress, 1, &options );
 	if (m_hListenSocket == k_HSteamListenSocket_Invalid)
 	{
-		debug::werror() << "Failed to listen on port " << m_port;
+		io::werror() << "Failed to listen on port " << m_port;
 		return;
 	}
 
 	m_hPollGroup = m_pInterface->CreatePollGroup();
 	if (m_hPollGroup == k_HSteamNetPollGroup_Invalid)
 	{
-		debug::werror() << "Failed to listen on port " << m_port;
+		io::werror() << "Failed to listen on port " << m_port;
 		return;
 	}
 
-	debug::winfo() << "Start server";
+	io::winfo() << "Start server";
 
 
 	while (m_running)
@@ -66,7 +71,7 @@ void engine::ChatServer::NetworkLoop()
 	}
 	
 
-	debug::winfo() << "Closing connections...";
+	io::winfo() << "Closing connections...";
 	
 	for (const auto& pair : clients)
 	{
@@ -80,6 +85,9 @@ void engine::ChatServer::NetworkLoop()
 	m_hListenSocket = k_HSteamListenSocket_Invalid;
 	m_pInterface->DestroyPollGroup( m_hPollGroup );
 	m_hPollGroup = k_HSteamNetPollGroup_Invalid;
+
+	m_pInterface = nullptr;
+	GameNetworkingSockets_Kill();
 }
 
 void engine::ChatServer::OnSteamNetConnectionStatusChanged( SteamNetConnectionStatusChangedCallback_t* pInfo )
@@ -114,14 +122,14 @@ void engine::ChatServer::PollIncomingMessages()
 		
 		if (numMessages < 0 || numMessages > maxMessages || !pIncomingMessage)
 		{
-			debug::werror() << "Error while poll incoming messages";
+			io::werror() << "Error while poll incoming messages";
 			return;
 		}
 
 		auto itClient = clients.find( pIncomingMessage->m_conn );
 		if (itClient == clients.end())
 		{
-			debug::werror() << "Can't find client of message";
+			io::werror() << "Can't find client of message";
 			return;
 		}
 
@@ -136,7 +144,7 @@ void engine::ChatServer::PollIncomingMessages()
 
 		swprintf_s(buffer, L"[%s] %s", itClient->second.nickname.c_str(), bufferCmd.c_str());
 
-		debug::wprint() << buffer;
+		io::wprint() << buffer;
 		SendStringToAllClients(buffer, itClient->first);
 	}
 	m_pInterface->RunCallbacks();
@@ -149,10 +157,10 @@ void engine::ChatServer::PollLocalUserInput()
 		if (wcscmp(cmd.c_str(), L"/quit") == 0)
 		{
 			Stop();
-			debug::winfo(L"Shutting down server");
+			io::winfo(L"Shutting down server");
 			break;
 		}
 
-		debug::winfo(L"The server only knows one command: '/quit'");
+		io::winfo(L"The server only knows one command: '/quit'");
 	}
 }

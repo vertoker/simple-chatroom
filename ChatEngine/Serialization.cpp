@@ -17,20 +17,21 @@ engine::Config engine::Config::GetDefaultClient()
 
 using json = nlohmann::json;
 
-void engine::Config::Save(const Config& config, const std::string& path)
+void engine::Config::Save(const Config& config, const std::wstring& path)
 {
 	std::ifstream ifs;
 	ifs.open(path);
 
 	if (!ifs.is_open())
 	{
-		debug::error() << "Can't open config file by path " << path;
+		io::werror() << "Can't open config file by path " << path;
 		return;
 	}
 
 	json json = json::parse(ifs);
 }
-engine::Config engine::Config::Load(const std::string& path)
+/*engine::Config engine::Config::Load(const std::string& path)
 {
-
-}
+	Config config{};
+	return config; // TODO
+}*/

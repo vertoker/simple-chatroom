@@ -1,7 +1,7 @@
 ﻿#include "pch.hpp"
 #include "Logger.hpp"
 
-void debug::log(LogType type, const std::string& message)
+void io::log(LogType type, const std::string& message)
 {
 	std::stringstream ss;
     switch (type)
@@ -28,7 +28,7 @@ void debug::log(LogType type, const std::string& message)
     std::cout << str << std::endl;
 }
 
-void debug::log(LogType type, const std::wstring& message)
+void io::log(LogType type, const std::wstring& message)
 {
 	std::wstringstream wss;
     switch (type)

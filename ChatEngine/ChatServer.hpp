@@ -4,6 +4,7 @@
 #include "ConsoleInput.hpp"
 
 #include <GameNetworkingSockets/steam/isteamnetworkingsockets.h>
+#include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
 
 namespace engine
 {
@@ -44,11 +45,11 @@ namespace engine
 		uint16_t m_port = 0;
 		bool m_running = false;
 		std::thread m_thread;
-		ConsoleInput consoleInput;
+		io::ConsoleInput consoleInput;
 
-		ISteamNetworkingSockets* m_pInterface;
-		HSteamListenSocket m_hListenSocket;
-		HSteamNetPollGroup m_hPollGroup;
+		ISteamNetworkingSockets* m_pInterface = nullptr;
+		HSteamListenSocket m_hListenSocket = k_HSteamListenSocket_Invalid;
+		HSteamNetPollGroup m_hPollGroup = k_HSteamNetPollGroup_Invalid;
 
 		std::unordered_map< HSteamNetConnection, ClientData > clients;
 	};

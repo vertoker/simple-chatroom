@@ -2,7 +2,7 @@
 
 #include "pch.hpp"
 
-namespace debug
+namespace io
 {
 	enum class LogType { Print, Info, Warning, Error, Debug };
 

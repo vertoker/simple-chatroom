@@ -2,7 +2,7 @@
 
 #include "pch.hpp"
 
-namespace engine
+namespace io
 {
 	class ConsoleInput
 	{
@@ -19,7 +19,7 @@ namespace engine
 		void InputLoop();
 
 	private:
-		std::mutex m_userInputQueue;
+		std::mutex m_userInputMutex;
 		std::queue<std::wstring> m_queueUserInput;
 		std::thread m_thread;
 		bool m_running = false;

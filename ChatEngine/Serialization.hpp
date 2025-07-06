@@ -11,7 +11,7 @@ namespace engine
 		static Config GetDefaultServer();
 		static Config GetDefaultClient();
 
-		static void Save(const Config& config, const std::string& path = "./config.json");
-		static Config Load(const std::string& path = "./config.json");
+		static void Save(const Config& config, const std::wstring& path = L"./config.json");
+		//static Config Load(const std::string& path = "./config.json");
 	};
 }
