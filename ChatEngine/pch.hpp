@@ -32,5 +32,6 @@
 #include "nlohmann/json.hpp"
 
 #include <boost/dll.hpp>
+#include <boost/random.hpp>
 
 #endif // !__PCH_H_

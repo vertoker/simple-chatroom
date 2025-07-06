@@ -47,7 +47,7 @@ int main()
 
     if (config.IsServer)
     {
-        engine::ChatServer server(37345);
+        engine::ChatServer server(80);
 
         server.Start();
         while (server.IsRunning());

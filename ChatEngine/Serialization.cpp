@@ -35,7 +35,7 @@ bool engine::Config::Save(const Config& config, const std::wstring& path)
 
 	if (!ofs.is_open())
 	{
-		io::werror() << "Can't open (to save) config file by path " << path;
+		io::wwarning() << "Can't open (to save) config file by path " << path;
 		return false;
 	}
 
@@ -50,7 +50,7 @@ bool engine::Config::Load(Config& config, const std::wstring& path)
 
 	if (!ifs.is_open())
 	{
-		io::werror() << "Can't open (to load) config file by path " << path;
+		io::wwarning() << "Can't open (to load) config file by path " << path;
 		return false;
 	}
 

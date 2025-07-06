@@ -10,12 +10,13 @@ namespace engine
 {
 	class ChatServer
 	{
-	public:
-		struct ClientData
+	private:
+		struct ClientData_t
 		{
 			std::wstring nickname;
 		};
 
+	public:
 		ChatServer(uint16_t port);
 		~ChatServer();
 
@@ -51,6 +52,6 @@ namespace engine
 		HSteamListenSocket m_hListenSocket = k_HSteamListenSocket_Invalid;
 		HSteamNetPollGroup m_hPollGroup = k_HSteamNetPollGroup_Invalid;
 
-		std::unordered_map< HSteamNetConnection, ClientData > clients;
+		std::unordered_map< HSteamNetConnection, ClientData_t > clients;
 	};
 }

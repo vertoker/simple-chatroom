@@ -1,6 +1,7 @@
 #include "pch.hpp"
 #include "ChatServer.hpp"
 #include "Logger.hpp"
+#include "Utilities.hpp"
 
 engine::ChatServer::ChatServer(uint16_t port) : m_port(port)
 {
@@ -88,11 +89,120 @@ void engine::ChatServer::NetworkLoop()
 	GameNetworkingSockets_Kill();
 }
 
-void engine::ChatServer::OnSteamNetConnectionStatusChanged( SteamNetConnectionStatusChangedCallback_t* pInfo )
-{
+void engine::ChatServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)  
+{  
+    wchar_t buffer[4096];
 
+    switch (auto state = pInfo->m_info.m_eState; state)
+    {
+		case k_ESteamNetworkingConnectionState_None:
+		{
+		    // callbacks if connections have been destroyed
+		    break;
+		}
+		case k_ESteamNetworkingConnectionState_ClosedByPeer:
+		case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
+		{
+			if (pInfo->m_eOldState == k_ESteamNetworkingConnectionState_Connected)
+			{
+				auto itClient = clients.find(pInfo->m_hConn);
+				if (itClient == clients.end())
+				{
+					io::werror() << "Can't find client by conn " << pInfo->m_info.m_szConnectionDescription;
+					Stop();
+					return;
+				}
+
+				const wchar_t* debugLogAction;
+				if (state == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
+				{
+					debugLogAction = L"problem detected locally";
+					swprintf_s(buffer, L"Alas, %s hath fallen into shadow.  (%hs)", itClient->second.nickname.c_str(), pInfo->m_info.m_szEndDebug);
+				}
+				else
+				{
+					debugLogAction = L"closed by peer";
+					swprintf_s(buffer, L"%s hath departed", itClient->second.nickname.c_str());
+				}
+
+				io::winfo() << L"Connection " << pInfo->m_info.m_szConnectionDescription
+					<< ' ' << debugLogAction
+					<< L", reason " << pInfo->m_info.m_eEndReason
+					<< L": " << pInfo->m_info.m_szEndDebug;
+
+				clients.erase(itClient);
+
+				SendStringToAllClients(buffer);
+			}
+			else if (pInfo->m_eOldState != k_ESteamNetworkingConnectionState_Connecting)
+			{
+				io::werror() << "Failed to connect, previous state is k_ESteamNetworkingConnectionState_Connecting";
+				Stop();
+				return;
+			}
+
+			// Must clean up connection even if it's closed, data isn't important (0's)
+			m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
+			break;
+		}
+		case k_ESteamNetworkingConnectionState_Connecting:
+		{
+			if (clients.find(pInfo->m_hConn) != clients.end())
+			{
+				io::werror() << "Found connection " << pInfo->m_info.m_szConnectionDescription << ", this must be a new connection";
+				Stop();
+				return;
+			}
+			io::winfo() << "Connection request from " << pInfo->m_info.m_szConnectionDescription;
+
+			// Try to accept connection
+			if (m_pInterface->AcceptConnection(pInfo->m_hConn) != k_EResultOK)
+			{
+				// Even connection internally could be failed
+				m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
+				io::wwarning() << "Can't accept connection. (It was already closed?)";
+				break;
+			}
+
+			// Assign the pool group
+			if (!m_pInterface->SetConnectionPollGroup(pInfo->m_hConn, m_hPollGroup))
+			{
+				m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
+				io::wwarning() << "Failed to set pool group";
+			}
+
+			auto rndNickname = utility::GenerateNickname();
+			swprintf_s(buffer, L"Welcome in chat, '%s'", rndNickname.c_str());
+			SendStringToClient(pInfo->m_hConn, buffer);
+
+			if (clients.empty())
+			{
+				SendStringToClient(pInfo->m_hConn, L"Right now you are here alone");
+			}
+			else
+			{
+				swprintf_s(buffer, L"%s companions with you", clients.size());
+				SendStringToClient(pInfo->m_hConn, buffer);
+				swprintf_s(buffer, L"%s joined in chat", rndNickname.c_str());
+				SendStringToAllClients(buffer, pInfo->m_hConn);
+			}
+
+			clients[pInfo->m_hConn]; // cool
+			clients[pInfo->m_hConn].nickname = std::move(rndNickname);
+
+			break;
+		}
+		case k_ESteamNetworkingConnectionState_Connected:
+		{
+			// Client already connected, do nothing
+			break;
+		}
+		default:
+		{
+			break;
+		}
+    }
 }
-
 
 void engine::ChatServer::SendStringToClient( HSteamNetConnection conn, const wchar_t* str )
 {
@@ -167,8 +277,8 @@ void engine::ChatServer::PollLocalUserInput()
 	{
 		if (wcscmp(cmd.c_str(), L"/quit") == 0)
 		{
-			Stop();
 			io::winfo(L"Shutting down server");
+			Stop();
 			break;
 		}
 

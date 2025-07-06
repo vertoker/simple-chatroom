@@ -21,4 +21,6 @@ namespace utility
 			[](int ch) { return !std::isspace(ch); }
 		).base(), s.end());
 	}
+
+	std::wstring GenerateNickname();
 }
