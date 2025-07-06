@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.hpp"
+#include "ConsoleInput.hpp"
 
 #include <GameNetworkingSockets/steam/isteamnetworkingsockets.h>
 
@@ -43,6 +44,7 @@ namespace engine
 		uint16_t m_port = 0;
 		bool m_running = false;
 		std::thread m_thread;
+		ConsoleInput consoleInput;
 
 		ISteamNetworkingSockets* m_pInterface;
 		HSteamListenSocket m_hListenSocket;

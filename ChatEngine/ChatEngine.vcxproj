@@ -141,6 +141,7 @@
     <ClInclude Include="pch.hpp" />
     <ClInclude Include="Serialization.hpp" />
     <ClInclude Include="ChatServer.hpp" />
+    <ClInclude Include="Utilities.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleInput.cpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Serialization.cpp" />
     <ClCompile Include="ChatServer.cpp" />
+    <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,9 +7,21 @@ namespace engine
 	class ConsoleInput
 	{
 	public:
-		bool LocalUserInput_GetNext(std::wstring& result);
+		ConsoleInput();
+		~ConsoleInput();
+
+		void Start();
+		void Stop();
+
+		bool GetNext(std::wstring& result);
 
 	private:
-		
+		void InputLoop();
+
+	private:
+		std::mutex m_userInputQueue;
+		std::queue<std::wstring> m_queueUserInput;
+		std::thread m_thread;
+		bool m_running = false;
 	};
 }

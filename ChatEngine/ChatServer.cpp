@@ -15,14 +15,15 @@ engine::ChatServer::~ChatServer()
 
 void engine::ChatServer::Start()
 {
-	if (m_running)
-		return;
+	if (m_running) return;
 
+	consoleInput.Start();
 	m_thread = std::thread([this]() { NetworkLoop(); });
 }
 void engine::ChatServer::Stop()
 {
 	m_running = false;
+	consoleInput.Stop();
 }
 
 void engine::ChatServer::NetworkLoop()
@@ -143,16 +144,15 @@ void engine::ChatServer::PollIncomingMessages()
 void engine::ChatServer::PollLocalUserInput()
 {
 	std::wstring cmd;
-	while (m_running && LocalUserInput_GetNext(cmd))
+	while (m_running && consoleInput.GetNext(cmd))
 	{
-		if (wstrcmp(cmd.c_str(), "/quit") == 0)
+		if (wcscmp(cmd.c_str(), L"/quit") == 0)
 		{
-			g_bQuit = true;
-			Printf("Shutting down server");
+			Stop();
+			debug::winfo(L"Shutting down server");
 			break;
 		}
 
-		// That's the only command we support
-		Printf("The server only knows one command: '/quit'");
+		debug::winfo(L"The server only knows one command: '/quit'");
 	}
 }
