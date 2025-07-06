@@ -62,7 +62,6 @@ void engine::ChatServer::NetworkLoop()
 
 	io::winfo() << "Start server";
 
-
 	while (m_running)
 	{
 		PollIncomingMessages();
@@ -70,12 +69,11 @@ void engine::ChatServer::NetworkLoop()
 		std::this_thread::sleep_for( std::chrono::milliseconds(10) );
 	}
 	
-
-	io::winfo() << "Closing connections...";
+	io::winfo() << "Stop server";
 	
 	for (const auto& pair : clients)
 	{
-		SendStringToClient(pair.first, L"Server is shotting down. Goodbye...");
+		SendStringToClient(pair.first, L"Server is shutting down. Goodbye...");
 		m_pInterface->CloseConnection(pair.first, 0, "Server Shutdown", true);
 	}
 
@@ -114,22 +112,35 @@ void engine::ChatServer::PollIncomingMessages()
 	const int maxMessages = 1;
 	wchar_t buffer[4096];
 
+	if (clients.size() == 0) return; // no clients
+
 	while (m_running)
 	{
 		ISteamNetworkingMessage* pIncomingMessage = nullptr;
 		int numMessages = m_pInterface->ReceiveMessagesOnConnection( m_hPollGroup, &pIncomingMessage, maxMessages);
-		if (numMessages == 0) break;
-		
-		if (numMessages < 0 || numMessages > maxMessages || !pIncomingMessage)
+		if (numMessages == 0) break; // no messages
+
+		if (numMessages < 0) // -1
 		{
-			io::werror() << "Error while poll incoming messages";
+			io::werror() << "The connection handle is invalid, stop server";
+			Stop();
+			return;
+		}
+		if (numMessages > maxMessages)
+		{
+			io::werror() << "numMessages (" << numMessages << ") bigger than maxMessages (" << maxMessages << ")";
+			return;
+		}
+		if (!pIncomingMessage)
+		{
+			io::werror() << "Invalid pIncomingMessage";
 			return;
 		}
 
 		auto itClient = clients.find( pIncomingMessage->m_conn );
 		if (itClient == clients.end())
 		{
-			io::werror() << "Can't find client of message";
+			io::werror() << "Received data from unhandled client";
 			return;
 		}
 

@@ -24,7 +24,7 @@ void io::ConsoleInput::Stop()
 {
 	m_running = false;
 
-	io::info(L"close stdin"); // TODO can't cancel stdin
+	//io::info(L"close stdin"); // TODO can't cancel stdin
 	//_close(_fileno(stdin));
 	//std::wcin.eof();
 }

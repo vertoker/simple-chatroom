@@ -32,11 +32,31 @@ int main()
     //swprintf_s(buffer2, L"[%s] %s", L"123", L"Костя");
     //debug::wprint() << buffer2;
 
-	engine::ChatServer server(37345);
+    engine::Config config;
+    auto path = engine::Config::GetDefaultPath();
+    if (engine::Config::Load(config, path))
+    {
+        io::winfo() << "Load config, IsServer = " << (config.IsServer ? "true" : "false");
+    }
+    else
+    {
+        config = engine::Config::GetDefaultClient();
+        engine::Config::Save(config, path);
+        io::winfo() << "Create default config, IsServer = " << (config.IsServer ? "true" : "false");
+    }
 
-    server.Start();
-    while (server.IsRunning());
-    server.Stop();
+    if (config.IsServer)
+    {
+        engine::ChatServer server(37345);
+
+        server.Start();
+        while (server.IsRunning());
+        server.Stop();
+    }
+    else
+    {
+        io::wwarning() << "No client support yet";
+    }
 
 	io::wprint() << "Press any key to exit...";
 	std::wcin.ignore();

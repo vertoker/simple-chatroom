@@ -10,8 +10,9 @@ namespace engine
 
 		static Config GetDefaultServer();
 		static Config GetDefaultClient();
+		static std::wstring GetDefaultPath(const std::wstring& name = L"/config.json");
 
-		static void Save(const Config& config, const std::wstring& path = L"./config.json");
-		//static Config Load(const std::string& path = "./config.json");
+		static bool Save(const Config& config, const std::wstring& path);
+		static bool Load(Config& config, const std::wstring& path);
 	};
 }
