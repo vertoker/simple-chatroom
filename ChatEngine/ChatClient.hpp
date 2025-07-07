@@ -23,11 +23,19 @@ namespace engine
 		void Start();
 		void Stop();
 
-		bool IsRunning() const { return m_running; }
-		uint16_t GetPort() const { return m_port; }
+		inline bool IsRunning() const noexcept { return m_running; }
+		inline SteamNetworkingIPAddr GetAddress() const noexcept { return m_serverAddress; }
 
 	private:
-		SteamNetworkingIPAddr m_address; // TODO
+		void NetworkLoop();
+
+		void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo);
+
+		void PollIncomingMessages();
+		void PollLocalUserInput();
+
+	private:
+		SteamNetworkingIPAddr m_serverAddress;
 		bool m_running = false;
 		std::thread m_thread;
 		io::ConsoleInput consoleInput;

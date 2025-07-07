@@ -28,8 +28,8 @@ namespace engine
 		void Start();
 		void Stop();
 
-		bool IsRunning() const { return m_running; }
-		uint16_t GetPort() const { return m_port; }
+		inline bool IsRunning() const noexcept { return m_running; }
+		inline uint16_t GetPort() const noexcept { return m_port; }
 
 	private:
 		void NetworkLoop();

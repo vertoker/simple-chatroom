@@ -66,6 +66,7 @@ void engine::ChatServer::NetworkLoop()
 	while (m_running)
 	{
 		PollIncomingMessages();
+		m_pInterface->RunCallbacks();
 		PollLocalUserInput();
 		std::this_thread::sleep_for( std::chrono::milliseconds(10) );
 	}
@@ -219,7 +220,6 @@ void engine::ChatServer::SendStringToAllClients( const wchar_t* str, HSteamNetCo
 
 void engine::ChatServer::PollIncomingMessages()
 {
-	const int maxMessages = 1;
 	wchar_t buffer[4096];
 
 	if (clients.size() == 0) return; // no clients
@@ -227,7 +227,7 @@ void engine::ChatServer::PollIncomingMessages()
 	while (m_running)
 	{
 		ISteamNetworkingMessage* pIncomingMessage = nullptr;
-		int numMessages = m_pInterface->ReceiveMessagesOnConnection( m_hPollGroup, &pIncomingMessage, maxMessages);
+		int numMessages = m_pInterface->ReceiveMessagesOnConnection( m_hPollGroup, &pIncomingMessage, 1);
 		if (numMessages == 0) break; // no messages
 
 		if (numMessages < 0) // -1
@@ -236,9 +236,9 @@ void engine::ChatServer::PollIncomingMessages()
 			Stop();
 			return;
 		}
-		if (numMessages > maxMessages)
+		if (numMessages > 1)
 		{
-			io::werror() << "numMessages (" << numMessages << ") bigger than maxMessages (" << maxMessages << ")";
+			io::werror() << "numMessages (" << numMessages << ") bigger than 1";
 			return;
 		}
 		if (!pIncomingMessage)
@@ -268,7 +268,6 @@ void engine::ChatServer::PollIncomingMessages()
 		io::wprint() << buffer;
 		SendStringToAllClients(buffer, itClient->first);
 	}
-	m_pInterface->RunCallbacks();
 }
 void engine::ChatServer::PollLocalUserInput()
 {
