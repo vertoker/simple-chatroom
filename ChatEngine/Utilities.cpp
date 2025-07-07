@@ -21,3 +21,11 @@ std::wstring utility::GenerateNickname()
 
 	return buffer;
 }
+
+bool IsValidIPAddress(std::string_view ipAddress)
+{
+	std::string ipAddressStr(ipAddress.data(), ipAddress.size());
+
+	SteamNetworkingIPAddr address;
+	return address.ParseString(ipAddressStr.c_str());
+}

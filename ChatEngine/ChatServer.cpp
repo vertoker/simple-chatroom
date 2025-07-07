@@ -1,9 +1,10 @@
+
 #include "pch.hpp"
 #include "ChatServer.hpp"
 #include "Logger.hpp"
 #include "Utilities.hpp"
 
-engine::ChatServer::ChatServer(uint16_t port) : m_port(port)
+engine::ChatServer::ChatServer(const engine::Config& config) : m_port(config.Address.m_port)
 {
 
 }

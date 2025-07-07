@@ -1,7 +1,9 @@
-#pragma once
+#ifndef __CHAT_CLIENT_HPP_
+#define __CHAT_CLIENT_HPP_
 
 #include "pch.hpp"
 #include "ConsoleInput.hpp"
+#include "Serialization.hpp"
 
 #include <GameNetworkingSockets/steam/isteamnetworkingsockets.h>
 #include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
@@ -12,7 +14,7 @@ namespace engine
 	{
 
 	public:
-		ChatClient(const SteamNetworkingIPAddr& address);
+		ChatClient(const engine::Config& config);
 		~ChatClient();
 
 		ChatClient(const ChatClient&) = delete;
@@ -44,3 +46,4 @@ namespace engine
 		HSteamNetConnection m_hConnection = k_HSteamNetConnection_Invalid;
 	};
 }
+#endif // !__CHAT_CLIENT_HPP_

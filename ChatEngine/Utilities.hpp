@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __UTILITIES_HPP_
+#define __UTILITIES_HPP_
 
 #include "pch.hpp"
 
@@ -24,3 +25,4 @@ namespace utility
 
 	std::wstring GenerateNickname();
 }
+#endif // !__UTILITIES_HPP_

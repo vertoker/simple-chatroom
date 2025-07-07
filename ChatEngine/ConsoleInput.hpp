@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __CONSOLE_INPUT_HPP_
+#define __CONSOLE_INPUT_HPP_
 
 #include "pch.hpp"
 
@@ -25,3 +26,4 @@ namespace io
 		bool m_running = false;
 	};
 }
+#endif // !__CONSOLE_INPUT_HPP_

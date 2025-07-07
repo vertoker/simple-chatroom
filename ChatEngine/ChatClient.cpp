@@ -4,7 +4,7 @@
 #include "Logger.hpp"
 #include "Utilities.hpp"
 
-engine::ChatClient::ChatClient(const SteamNetworkingIPAddr& address) : m_serverAddress{address}
+engine::ChatClient::ChatClient(const engine::Config& config) : m_serverAddress{config.Address}
 {
 
 }
@@ -90,7 +90,36 @@ void engine::ChatClient::OnSteamNetConnectionStatusChanged(SteamNetConnectionSta
 	{
 		Stop();
 
-		// TODO
+		if (pInfo->m_eOldState == k_ESteamNetworkingConnectionState_Connecting)
+		{
+			io::winfo() << "Host reject you. " << pInfo->m_info.m_szEndDebug;
+		}
+		else if (pInfo->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
+		{
+			io::winfo() << "Can't connect to host. " << pInfo->m_info.m_szEndDebug;
+		}
+		else
+		{
+			io::winfo() << "Unknown disconnect. " << pInfo->m_info.m_szEndDebug;
+		}
+
+		// Clean up connection, even it's already closed externally
+		m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
+		m_hConnection = k_HSteamNetConnection_Invalid;
+		break;
+	}
+	case k_ESteamNetworkingConnectionState_Connecting:
+	{
+		// When start connection
+		break;
+	}
+	case k_ESteamNetworkingConnectionState_Connected:
+	{
+		io::winfo() << "Connected to server";
+		break;
+	}
+	default:
+	{
 		break;
 	}
 	}

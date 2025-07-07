@@ -1,7 +1,9 @@
 
 .vs/
 x64/
-packages
+
+packages/
+vcpkg_installed/
 
 *.vcxproj.user
 *.slnLaunch.user

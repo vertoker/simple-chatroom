@@ -1,10 +1,9 @@
-#pragma once
+#ifndef __CHAT_SERVER_HPP_
+#define __CHAT_SERVER_HPP_
 
 #include "pch.hpp"
 #include "ConsoleInput.hpp"
-
-#include <GameNetworkingSockets/steam/isteamnetworkingsockets.h>
-#include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
+#include "Serialization.hpp"
 
 namespace engine
 {
@@ -17,7 +16,7 @@ namespace engine
 		};
 
 	public:
-		ChatServer(uint16_t port);
+		ChatServer(const engine::Config& config);
 		~ChatServer();
 
 		ChatServer(const ChatServer&) = delete;
@@ -55,3 +54,4 @@ namespace engine
 		std::unordered_map< HSteamNetConnection, ClientData_t > clients;
 	};
 }
+#endif // !__CHAT_SERVER_HPP_
