@@ -20,8 +20,12 @@ int main()
 {
     enableUTF16InWinConsole();
 
-    engine::Engine engine;
-    engine.Run();
+    SteamNetworkingIPAddr Address;
+    engine::Config config;
+    io::winfo() << engine::Config::GetDefaultPath();
+    engine::ChatServer server(config);
+    //engine::Engine engine;
+    //engine.Run();
 
 	return 0;
 }

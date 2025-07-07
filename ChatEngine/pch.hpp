@@ -31,7 +31,7 @@
 
 #include "nlohmann/json.hpp"
 
-#include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
+#include <GameNetworkingSockets/steam/isteamnetworkingsockets.h>
 
 #include <boost/dll.hpp>
 #include <boost/random.hpp>

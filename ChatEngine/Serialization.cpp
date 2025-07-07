@@ -31,9 +31,9 @@ engine::Config engine::Config::GetDefaultClient()
 }
 std::wstring engine::Config::GetDefaultPath(const std::wstring& name)
 {
-	//auto programLocation = boost::dll::program_location().parent_path();// .generic_path();
+	auto programLocation = boost::dll::program_location().parent_path();// .generic_path();
 	std::wostringstream woss;
-	//woss << programLocation.c_str() << name;
+	woss << programLocation.c_str() << name;
 	return woss.str();
 }
 

@@ -7,6 +7,7 @@ Dependencies
 - [GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets)
 - [nlohmann/json](https://github.com/nlohmann/json)
 - `boost.dll`
+- `boost.random`
 
 Sources
 - https://github.com/ValveSoftware/GameNetworkingSockets
