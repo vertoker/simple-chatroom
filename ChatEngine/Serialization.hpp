@@ -1,9 +1,7 @@
-#ifndef __SERIALIZATION_HPP_
-#define __SERIALIZATION_HPP_
+#pragma once
 
-#include "pch.hpp"
+#include <string>
 
-#include <GameNetworkingSockets/steam/isteamnetworkingsockets.h>
 #include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
 
 namespace engine
@@ -23,4 +21,3 @@ namespace engine
 		static bool Load(Config& config, const std::wstring& path);
 	};
 }
-#endif // !__SERIALIZATION_HPP_

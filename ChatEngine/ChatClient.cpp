@@ -1,10 +1,13 @@
 
-#include "pch.hpp"
 #include "ChatClient.hpp"
 #include "Logger.hpp"
 #include "Utilities.hpp"
 
-engine::ChatClient::ChatClient(const engine::Config& config) : m_serverAddress{config.Address}
+#include <functional>
+
+#include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
+
+engine::ChatClient::ChatClient(const SteamNetworkingIPAddr& address) : m_serverAddress{address}
 {
 
 }

@@ -1,5 +1,10 @@
-#include "pch.hpp"
+
 #include "Utilities.hpp"
+
+#include <sstream>
+
+#include <boost/random.hpp>
+//#include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
 
 const std::wstring alphabet = L"abcdefghigklmnopqrstuvwxyz";
 
@@ -24,8 +29,7 @@ std::wstring utility::GenerateNickname()
 
 bool IsValidIPAddress(std::string_view ipAddress)
 {
-	std::string ipAddressStr(ipAddress.data(), ipAddress.size());
-
-	SteamNetworkingIPAddr address;
-	return address.ParseString(ipAddressStr.c_str());
+	//std::string ipAddressStr(ipAddress.data(), ipAddress.size());
+	//SteamNetworkingIPAddr address;
+	//return address.ParseString(ipAddressStr.c_str());
 }

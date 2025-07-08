@@ -1,7 +1,7 @@
-#ifndef __LOGGER_HPP_
-#define __LOGGER_HPP_
+#pragma once
 
-#include "pch.hpp"
+#include <string>
+#include <sstream>
 
 namespace io
 {
@@ -78,4 +78,3 @@ namespace io
 	template<class _Elem>
 	inline BasicLoggerStream<_Elem>::~BasicLoggerStream() { log(type, oss.str()); }
 }
-#endif // !__LOGGER_HPP_

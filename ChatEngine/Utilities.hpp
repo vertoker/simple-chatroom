@@ -1,7 +1,6 @@
-#ifndef __UTILITIES_HPP_
-#define __UTILITIES_HPP_
+#pragma once
 
-#include "pch.hpp"
+#include <string>
 
 namespace utility
 {
@@ -25,4 +24,3 @@ namespace utility
 
 	std::wstring GenerateNickname();
 }
-#endif // !__UTILITIES_HPP_

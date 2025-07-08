@@ -70,10 +70,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Label="Vcpkg">
-    <VcpkgEnabled>true</VcpkgEnabled>
-    <VcpkgEnableManifest>false</VcpkgEnableManifest>
-  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -147,7 +143,6 @@
     <ClInclude Include="ConsoleInput.hpp" />
     <ClInclude Include="Engine.hpp" />
     <ClInclude Include="Logger.hpp" />
-    <ClInclude Include="pch.hpp" />
     <ClInclude Include="Serialization.hpp" />
     <ClInclude Include="ChatServer.hpp" />
     <ClInclude Include="Utilities.hpp" />

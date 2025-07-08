@@ -1,6 +1,4 @@
 ﻿#include "ChatEngine/Engine.hpp"
-//#include "ChatEngine/ChatServer.hpp"
-//#include "ChatEngine/Logger.hpp"
 
 #include <io.h>
 #include <fcntl.h>
@@ -20,12 +18,8 @@ int main()
 {
     enableUTF16InWinConsole();
 
-    SteamNetworkingIPAddr Address;
-    engine::Config config;
-    io::winfo() << engine::Config::GetDefaultPath();
-    engine::ChatServer server(config);
-    //engine::Engine engine;
-    //engine.Run();
+    engine::Engine engine;
+    engine.Run();
 
 	return 0;
 }

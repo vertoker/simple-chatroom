@@ -1,5 +1,8 @@
-﻿#include "pch.hpp"
+﻿
 #include "Logger.hpp"
+
+#include <sstream>
+#include <iostream>
 
 void io::log(LogType type, const std::string& message)
 {

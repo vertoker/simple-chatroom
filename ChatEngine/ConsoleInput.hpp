@@ -1,7 +1,9 @@
-#ifndef __CONSOLE_INPUT_HPP_
-#define __CONSOLE_INPUT_HPP_
+#pragma once
 
-#include "pch.hpp"
+#include <thread>
+#include <mutex>
+#include <queue>
+#include <string>
 
 namespace io
 {
@@ -26,4 +28,3 @@ namespace io
 		bool m_running = false;
 	};
 }
-#endif // !__CONSOLE_INPUT_HPP_

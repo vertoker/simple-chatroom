@@ -1,7 +1,9 @@
-#include "pch.hpp"
+
 #include "ConsoleInput.hpp"
 #include "Utilities.hpp"
 #include "Logger.hpp"
+
+#include <iostream>
 
 io::ConsoleInput::ConsoleInput()
 {
