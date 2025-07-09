@@ -6,6 +6,10 @@
 #include <functional>
 
 #include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
+#include <GameNetworkingSockets/steam/isteamnetworkingutils.h>
+#ifndef STEAMNETWORKINGSOCKETS_OPENSOURCE
+#include <GameNetworkingSockets/steam/steam_api.h>
+#endif
 
 engine::ChatServer::ChatServer(uint16_t port) : m_port(port)
 {
@@ -70,6 +74,7 @@ void engine::ChatServer::NetworkLoop()
 	while (m_running)
 	{
 		PollIncomingMessages();
+		//io::winfo() << "Run Callbacks";
 		m_pInterface->RunCallbacks();
 		PollLocalUserInput();
 		std::this_thread::sleep_for( std::chrono::milliseconds(10) );

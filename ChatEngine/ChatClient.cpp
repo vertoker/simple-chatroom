@@ -6,6 +6,10 @@
 #include <functional>
 
 #include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
+#include <GameNetworkingSockets/steam/isteamnetworkingutils.h>
+#ifndef STEAMNETWORKINGSOCKETS_OPENSOURCE
+#include <GameNetworkingSockets/steam/steam_api.h>
+#endif
 
 engine::ChatClient::ChatClient(const SteamNetworkingIPAddr& address) : m_serverAddress{address}
 {
@@ -178,7 +182,7 @@ void engine::ChatClient::PollLocalUserInput()
 			break;
 		}
 
-		m_pInterface->SendMessageToConnection(m_hConnection, cmd.c_str(), (uint32_t)cmd.length() / sizeof(wchar_t), k_nSteamNetworkingSend_Reliable, nullptr); // TODO
-		io::winfo(L"The server only knows one command: '/quit'");
+		m_pInterface->SendMessageToConnection(m_hConnection, cmd.c_str(), (uint32_t)(cmd.size() * sizeof(wchar_t)), k_nSteamNetworkingSend_Reliable, nullptr); // TODO
+		//io::winfo(L"The server only knows one command: '/quit'");
 	}
 }

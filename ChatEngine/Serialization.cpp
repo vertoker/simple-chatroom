@@ -5,18 +5,22 @@
 #include <sstream>
 #include <string>
 
+#include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
+#include <GameNetworkingSockets/steam/isteamnetworkingutils.h>
+#ifndef STEAMNETWORKINGSOCKETS_OPENSOURCE
+#include <GameNetworkingSockets/steam/steam_api.h>
+#endif
 #include "nlohmann/json.hpp"
 #include <boost/dll.hpp>
-#include <GameNetworkingSockets/steam/steamnetworkingsockets.h>
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
-static const uint16_t defaultPort = 37749;
+static const uint16_t defaultPort = 27020;
 
 void engine::Config::PrintData()
 {
 	char bufferIP[SteamNetworkingIPAddr::k_cchMaxString];
-	//Address.ToString(bufferIP, sizeof(bufferIP), true);
+	Address.ToString(bufferIP, sizeof(bufferIP), true);
 
 	io::winfo() << "IsServer = " << (IsServer ? "true" : "false");
 	io::winfo() << "Address = " << bufferIP;
@@ -48,6 +52,10 @@ bool engine::Config::Save(const Config& config, const std::wstring& path)
 {
 	json json;
 	json["IsServer"] = config.IsServer;
+	char bufferIP[SteamNetworkingIPAddr::k_cchMaxString];
+	config.Address.ToString(bufferIP, sizeof(bufferIP), true);
+	std::string addressStr(bufferIP);
+	json["Address"] = addressStr;
 
 	std::ofstream ofs;
 	ofs.open(path, std::ios_base::trunc);
@@ -75,6 +83,8 @@ bool engine::Config::Load(Config& config, const std::wstring& path)
 
 	json json = json::parse(ifs);
 	config.IsServer = json["IsServer"];
+	std::string addressStr = json["Address"];
+	config.Address.ParseString(addressStr.c_str());
 
 	return true;
 }
