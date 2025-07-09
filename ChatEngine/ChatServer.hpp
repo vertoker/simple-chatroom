@@ -40,13 +40,16 @@ namespace engine
 		void NetworkLoop();
 
 		void OnSteamNetConnectionStatusChanged( SteamNetConnectionStatusChangedCallback_t* pInfo );
+		static void SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 
 		void SendStringToClient( HSteamNetConnection conn, const wchar_t* str );
 		void SendStringToAllClients( const wchar_t* str, HSteamNetConnection except = k_HSteamNetConnection_Invalid );
 
 		void PollIncomingMessages();
+		void PollConnectionStateChanges();
 		void PollLocalUserInput();
 
+		
 	private:
 		uint16_t m_port = 0;
 		bool m_running = false;

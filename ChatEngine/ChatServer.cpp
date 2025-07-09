@@ -11,6 +11,8 @@
 #include <GameNetworkingSockets/steam/steam_api.h>
 #endif
 
+static engine::ChatServer* s_pCallbackInstance;
+
 engine::ChatServer::ChatServer(uint16_t port) : m_port(port)
 {
 
@@ -51,9 +53,7 @@ void engine::ChatServer::NetworkLoop()
 	serverLocalAddress.m_port = m_port;
 
 	SteamNetworkingConfigValue_t options{};
-	auto lambda = [this](SteamNetConnectionStatusChangedCallback_t* pInfo) { this->OnSteamNetConnectionStatusChanged(pInfo); };
-	std::function<void(SteamNetConnectionStatusChangedCallback_t*)> fn(lambda);
-	options.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, &lambda ); // TODO make static
+	options.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, &SteamNetConnectionStatusChangedCallback );
 
 	m_hListenSocket = m_pInterface->CreateListenSocketIP( serverLocalAddress, 1, &options );
 	if (m_hListenSocket == k_HSteamListenSocket_Invalid)
@@ -74,8 +74,7 @@ void engine::ChatServer::NetworkLoop()
 	while (m_running)
 	{
 		PollIncomingMessages();
-		//io::winfo() << "Run Callbacks";
-		m_pInterface->RunCallbacks();
+		PollConnectionStateChanges();
 		PollLocalUserInput();
 		std::this_thread::sleep_for( std::chrono::milliseconds(10) );
 	}
@@ -100,7 +99,7 @@ void engine::ChatServer::NetworkLoop()
 }
 
 void engine::ChatServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)  
-{  
+{
     wchar_t buffer[4096];
 
     switch (auto state = pInfo->m_info.m_eState; state)
@@ -213,10 +212,14 @@ void engine::ChatServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionSta
 		}
     }
 }
+void engine::ChatServer::SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo)
+{
+	s_pCallbackInstance->OnSteamNetConnectionStatusChanged(pInfo);
+}
 
 void engine::ChatServer::SendStringToClient( HSteamNetConnection conn, const wchar_t* str )
 {
-	m_pInterface->SendMessageToConnection(conn, str, (uint32)wcslen(str), k_nSteamNetworkingSend_Reliable, nullptr);
+	m_pInterface->SendMessageToConnection(conn, str, (uint32)(wcslen(str) * sizeof(wchar_t)), k_nSteamNetworkingSend_Reliable, nullptr);
 }
 void engine::ChatServer::SendStringToAllClients( const wchar_t* str, HSteamNetConnection except )
 {
@@ -277,6 +280,11 @@ void engine::ChatServer::PollIncomingMessages()
 		io::wprint() << buffer;
 		SendStringToAllClients(buffer, itClient->first);
 	}
+}
+void engine::ChatServer::PollConnectionStateChanges()
+{
+	s_pCallbackInstance = this;
+	m_pInterface->RunCallbacks();
 }
 void engine::ChatServer::PollLocalUserInput()
 {

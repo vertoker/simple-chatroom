@@ -11,6 +11,8 @@
 #include <GameNetworkingSockets/steam/steam_api.h>
 #endif
 
+static engine::ChatClient* s_pCallbackInstance;
+
 engine::ChatClient::ChatClient(const SteamNetworkingIPAddr& address) : m_serverAddress{address}
 {
 
@@ -47,9 +49,7 @@ void engine::ChatClient::NetworkLoop()
 	m_pInterface = SteamNetworkingSockets();
 
 	SteamNetworkingConfigValue_t options{};
-	auto lambda = [this](SteamNetConnectionStatusChangedCallback_t* pInfo) { this->OnSteamNetConnectionStatusChanged(pInfo); };
-	std::function<void(SteamNetConnectionStatusChangedCallback_t*)> fn(lambda);
-	options.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, &lambda); // TODO make static
+	options.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, &SteamNetConnectionStatusChangedCallback );
 
 	m_hConnection = m_pInterface->ConnectByIPAddress(m_serverAddress, 1, &options);
 	if (m_hConnection == k_HSteamNetConnection_Invalid)
@@ -59,15 +59,16 @@ void engine::ChatClient::NetworkLoop()
 		return;
 	}
 
-	io::winfo() << "Start client";
-
 	char szAddress[SteamNetworkingIPAddr::k_cchMaxString];
 	m_serverAddress.ToString(szAddress, sizeof(szAddress), true);
 	io::winfo() << "Connnected to chat server at " << szAddress;
 
+	io::winfo() << "Start client";
+
 	while (m_running)
 	{
 		PollIncomingMessages();
+		PollConnectionStateChanges();
 		PollLocalUserInput();
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
@@ -132,6 +133,11 @@ void engine::ChatClient::OnSteamNetConnectionStatusChanged(SteamNetConnectionSta
 	}
 }
 
+void engine::ChatClient::SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo)
+{
+	s_pCallbackInstance->OnSteamNetConnectionStatusChanged(pInfo);
+}
+
 void engine::ChatClient::PollIncomingMessages()
 {
 	//wchar_t buffer[4096];
@@ -168,7 +174,11 @@ void engine::ChatClient::PollIncomingMessages()
 		io::wprint() << bufferCmd;
 	}
 }
-
+void engine::ChatClient::PollConnectionStateChanges()
+{
+	s_pCallbackInstance = this;
+	m_pInterface->RunCallbacks();
+}
 void engine::ChatClient::PollLocalUserInput()
 {
 	std::wstring cmd;

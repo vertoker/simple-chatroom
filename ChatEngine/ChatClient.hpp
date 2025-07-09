@@ -34,8 +34,10 @@ namespace engine
 		void NetworkLoop();
 
 		void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo);
+		static void SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 
 		void PollIncomingMessages();
+		void PollConnectionStateChanges();
 		void PollLocalUserInput();
 
 	private:

@@ -21,5 +21,8 @@ int main()
     engine::Engine engine;
     engine.Run();
 
+    //utility::StringBuffer<wchar_t> buffer;
+    //io::winfo() << buffer.getStr;
+
 	return 0;
 }
