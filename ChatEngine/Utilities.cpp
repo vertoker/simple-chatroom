@@ -17,9 +17,7 @@ boost::random::uniform_real_distribution<double> gen(0.0, 1.0);
 
 std::wstring utility::GenerateNickname()
 {
-	std::wstring buffer;
-	buffer.reserve(6);
-	std::wostringstream woss(buffer);
+	std::wostringstream woss;
 
 	woss << alphabet[ (size_t)(gen(rng) * (alphabet.size() - 1)) ];
 	woss << alphabet[ (size_t)(gen(rng) * (alphabet.size() - 1)) ];
@@ -28,7 +26,7 @@ std::wstring utility::GenerateNickname()
 	woss << (int)(gen(rng) * 9);
 	woss << (int)(gen(rng) * 9);
 
-	return buffer;
+	return woss.str();
 }
 
 bool IsValidIPAddress(std::string_view ipAddress)

@@ -49,7 +49,7 @@ void engine::ChatClient::NetworkLoop()
 	m_pInterface = SteamNetworkingSockets();
 
 	SteamNetworkingConfigValue_t options{};
-	options.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, &SteamNetConnectionStatusChangedCallback );
+	options.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)SteamNetConnectionStatusChangedCallback );
 
 	m_hConnection = m_pInterface->ConnectByIPAddress(m_serverAddress, 1, &options);
 	if (m_hConnection == k_HSteamNetConnection_Invalid)

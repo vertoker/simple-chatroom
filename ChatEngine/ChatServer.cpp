@@ -53,21 +53,23 @@ void engine::ChatServer::NetworkLoop()
 	serverLocalAddress.m_port = m_port;
 
 	SteamNetworkingConfigValue_t options{};
-	options.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, &SteamNetConnectionStatusChangedCallback );
+	options.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)SteamNetConnectionStatusChangedCallback );
 
 	m_hListenSocket = m_pInterface->CreateListenSocketIP( serverLocalAddress, 1, &options );
 	if (m_hListenSocket == k_HSteamListenSocket_Invalid)
 	{
-		io::werror() << "Failed to listen on port " << m_port;
+		io::werror() << "Failed to listen on port " << m_port << " (listen socket)";
 		return;
 	}
 
 	m_hPollGroup = m_pInterface->CreatePollGroup();
 	if (m_hPollGroup == k_HSteamNetPollGroup_Invalid)
 	{
-		io::werror() << "Failed to listen on port " << m_port;
+		io::werror() << "Failed to listen on port " << m_port << " (poll group)";
 		return;
 	}
+
+	io::winfo() << "Listening on port " << m_port;
 
 	io::winfo() << "Start server";
 
